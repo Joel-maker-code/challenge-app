@@ -1,128 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #0f1115;
-  color: #eaeaea;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #15181b;
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.035), transparent 40%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  color: #ECE9E2;
+  font-family: 'Inter', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 32px 16px 80px;
 }
 
-.card {
-  width: 100%;
-  max-width: 480px;
+.card { width: 100%; max-width: 460px; }
+
+/* ---- Header ---- */
+.brand-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #FF6A1A;
+  text-transform: uppercase;
+  margin: 0 0 4px;
 }
 
 h1 {
-  font-size: 28px;
-  margin-bottom: 4px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin: 0 0 6px;
+  color: #F5F2EC;
 }
 
 .subtitle {
-  color: #9aa0aa;
-  margin-top: 0;
-  margin-bottom: 24px;
+  color: #9A9E9F;
+  margin: 0 0 28px;
+  font-size: 15px;
 }
 
+/* ---- Create form ---- */
 .create-form {
   display: flex;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .create-form input, .join-form input {
   flex: 1;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #2a2d36;
-  background: #1a1d24;
-  color: #eaeaea;
+  padding: 14px 14px;
+  border-radius: 4px;
+  border: 1px solid #33383c;
+  background: #1B1E21;
+  color: #ECE9E2;
   font-size: 15px;
+  font-family: 'Inter', sans-serif;
+}
+
+.create-form input:focus, .join-form input:focus {
+  outline: none;
+  border-color: #FF6A1A;
 }
 
 button {
-  padding: 12px 18px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 4px;
   border: none;
-  background: #4f7cff;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+  background: #FF6A1A;
+  color: #15181b;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.08s ease, background 0.15s ease;
 }
 
-button:hover { opacity: 0.9; }
+button:hover { background: #FF7D38; }
+button:active { transform: scale(0.97); }
 
-.challenge-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* ---- Section labels ---- */
+h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6F7477;
+  border-bottom: 1px solid #2A2E31;
+  padding-bottom: 10px;
+  margin: 0 0 14px;
 }
+
+/* ---- Challenge list ---- */
+.challenge-list { list-style: none; padding: 0; margin: 0; }
 
 .challenge-item {
-  background: #1a1d24;
-  border: 1px solid #2a2d36;
-  border-radius: 12px;
-  padding: 16px;
+  background: #1B1E21;
+  border: 1px solid #2A2E31;
+  border-left: 3px solid #FF6A1A;
+  border-radius: 4px;
+  padding: 16px 18px;
   margin-bottom: 10px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.challenge-item:hover { border-color: #4f7cff; }
+.challenge-item:hover { background: #202327; border-color: #3a3f43; border-left-color: #FF6A1A; }
+
+.challenge-item strong {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  color: #F5F2EC;
+}
 
 .code {
-  font-size: 13px;
-  color: #9aa0aa;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #797E80;
+  letter-spacing: 0.04em;
 }
 
-.empty { color: #9aa0aa; }
+.empty {
+  color: #6F7477;
+  font-size: 14px;
+  padding: 20px 0;
+  border: 1px dashed #2A2E31;
+  border-radius: 4px;
+  text-align: center;
+}
 
+/* ---- Challenge detail ---- */
 .back-btn {
   background: transparent;
-  color: #9aa0aa;
+  color: #9A9E9F;
   padding: 6px 0;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  text-transform: none;
   font-weight: 500;
+  font-size: 14px;
 }
+.back-btn:hover { color: #ECE9E2; }
 
 .copy-btn {
-  background: #262a33;
-  color: #eaeaea;
+  background: #1B1E21;
+  border: 1px solid #33383c;
+  color: #ECE9E2;
   width: 100%;
-  margin: 12px 0 20px;
+  margin: 14px 0 24px;
+  text-transform: none;
+  font-weight: 600;
 }
+.copy-btn:hover { background: #202327; }
 
-.join-form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-}
+.join-form { display: flex; gap: 8px; margin-bottom: 28px; }
 
+/* ---- Check-in box ---- */
 .checkin-box {
-  background: #1a1d24;
-  border: 1px solid #2a2d36;
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 24px;
+  background: #1B1E21;
+  border: 1px solid #2A2E31;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.checkin-box p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: #9A9E9F;
+}
+
+.checkin-box strong {
+  font-family: 'JetBrains Mono', monospace;
+  color: #FF6A1A;
+  font-size: 16px;
 }
 
 .checkin-btn {
-  background: #2e7d32;
+  background: #FF6A1A;
   width: 100%;
-  font-size: 16px;
-  padding: 16px;
-  margin-top: 10px;
+  font-size: 15px;
+  padding: 18px;
+  letter-spacing: 0.05em;
 }
 
+/* ---- Leaderboard ---- */
 .leaderboard {
   list-style: none;
   padding: 0;
@@ -134,20 +210,33 @@ button:hover { opacity: 0.9; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1a1d24;
-  border: 1px solid #2a2d36;
-  border-radius: 10px;
-  padding: 12px 16px;
+  background: #1B1E21;
+  border: 1px solid #2A2E31;
+  border-radius: 4px;
+  padding: 14px 16px;
   margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.leaderboard li:first-child {
+  border-color: #FF6A1A;
+  background: #201a14;
 }
 
 .leaderboard li::before {
-  content: counter(rank) ". ";
-  color: #9aa0aa;
-  margin-right: 8px;
+  content: counter(rank);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #6F7477;
+  margin-right: 14px;
+  min-width: 16px;
 }
 
+.leaderboard li:first-child::before { color: #FF6A1A; }
+
 .score {
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  color: #4f7cff;
+  color: #FF6A1A;
+  font-size: 15px;
 }

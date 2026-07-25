@@ -75,7 +75,8 @@ function App() {
   return (
     <div className="page">
       <div className="card">
-        <h1>Group Challenges</h1>
+        <p className="brand-eyebrow">No spreadsheets. No excuses.</p>
+        <h1>GROUP CHALLENGES</h1>
         <p className="subtitle">Create a challenge, share the link, keep each other honest.</p>
 
         <form onSubmit={createChallenge} className="create-form">
@@ -92,7 +93,7 @@ function App() {
         {loading ? (
           <p>Loading...</p>
         ) : challenges.length === 0 ? (
-          <p className="empty">No challenges yet — create the first one above.</p>
+          <p className="empty">Nobody's started one yet. Be first.</p>
         ) : (
           <ul className="challenge-list">
             {challenges.map((c) => (
@@ -207,9 +208,9 @@ function ChallengeDetail({ challenge, onBack }) {
           </form>
         ) : (
           <div className="checkin-box">
-            <p>You're in! Streak so far: <strong>{me ? me.checkinCount : 0}</strong> check-ins</p>
+            <p>Logged in as <strong>{me ? me.name : ''}</strong> · {me ? me.checkinCount : 0} check-ins so far</p>
             <button onClick={checkIn} className="checkin-btn">
-              ✅ I completed today's challenge
+              LOG TODAY
             </button>
           </div>
         )}
@@ -223,8 +224,7 @@ function ChallengeDetail({ challenge, onBack }) {
               <li key={p.id}>
                 <span>{p.name}</span>
                 <span className="score">{p.checkinCount}</span>
-              </li>
-            ))}
+              </li>            ))}
           </ol>
         )}
       </div>
