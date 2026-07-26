@@ -457,3 +457,70 @@ h2 {
   max-height: 100%;
   border-radius: 6px;
 }
+
+.closed-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #9A9E9F;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.closed-line {
+  color: #ff8a6a;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.end-date-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #9A9E9F;
+  margin: 0 0 20px;
+}
+
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #9A9E9F;
+}
+
+.field-label input[type="date"] {
+  padding: 12px 14px;
+  border-radius: 4px;
+  border: 1px solid #33383c;
+  background: #1B1E21;
+  color: #ECE9E2;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.inline-link {
+  background: transparent;
+  color: #FF6A1A;
+  padding: 0;
+  text-transform: none;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline;
+}
+.inline-link:hover { background: transparent; text-decoration: underline; }
+
+.lb-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remove-link {
+  background: transparent;
+  color: #6F7477;
+  padding: 0;
+  text-transform: none;
+  font-weight: 500;
+  font-size: 12px;
+}
+.remove-link:hover { color: #ff8a6a; background: transparent; }

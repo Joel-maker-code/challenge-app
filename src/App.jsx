@@ -177,6 +177,7 @@ function App() {
                 <strong>{c.name}</strong>
                 <span className="code">Code: {c.invite_code}</span>
                 {c.prize_pool && <span className="prize-badge">Prize: {c.prize_pool}</span>}
+                {c.closed && <span className="closed-badge">Closed</span>}
               </li>
             ))}
           </ul>
@@ -201,7 +202,11 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
   const [editName, setEditName] = useState(challenge.name)
   const [editRules, setEditRules] = useState(challenge.rules || '')
   const [editPrize, setEditPrize] = useState(challenge.prize_pool || '')
+  const [editEndDate, setEditEndDate] = useState(challenge.end_date || '')
   const [viewingPhoto, setViewingPhoto] = useState(null)
+  const [editingMyName, setEditingMyName] = useState(false)
+  const [myNameInput, setMyNameInput] = useState('')
+  const [replacingPhoto, setReplacingPhoto] = useState(false)
 
   const isCreator =
     challenge.creator_token &&
@@ -278,6 +283,64 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
     loadParticipants()
   }
 
+  async function saveMyName(e) {
+    e.preventDefault()
+    if (!myNameInput.trim()) return
+
+    const { error } = await supabase.rpc('update_participant_name', {
+      p_participant_id: myParticipantId,
+      p_name: myNameInput,
+    })
+
+    if (error) {
+      console.error(error)
+      alert('Something went wrong updating your name.')
+      return
+    }
+
+    setEditingMyName(false)
+    loadParticipants()
+  }
+
+  async function removeParticipant(participantId, participantName) {
+    if (!confirm('Remove ' + participantName + ' from this challenge?')) return
+
+    const token = localStorage.getItem('creator_' + challenge.id)
+
+    const { error } = await supabase.rpc('remove_participant', {
+      p_challenge_id: challenge.id,
+      p_token: token,
+      p_participant_id: participantId,
+    })
+
+    if (error) {
+      console.error(error)
+      alert('Something went wrong removing them: ' + error.message)
+      return
+    }
+
+    loadParticipants()
+  }
+
+  async function closeChallenge() {
+    if (!confirm('Close this challenge? No one will be able to check in anymore.')) return
+
+    const token = localStorage.getItem('creator_' + challenge.id)
+
+    const { error } = await supabase.rpc('close_challenge', {
+      p_challenge_id: challenge.id,
+      p_token: token,
+    })
+
+    if (error) {
+      console.error(error)
+      alert('Something went wrong closing the challenge: ' + error.message)
+      return
+    }
+
+    setChallenge({ ...challenge, closed: true })
+  }
+
   async function checkIn() {
     setUploading(true)
     let photo_url = null
@@ -314,6 +377,40 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
     setUploading(false)
   }
 
+  async function replaceTodaysPhoto(file) {
+    setReplacingPhoto(true)
+    const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_')
+    const filePath = myParticipantId + '/' + Date.now() + '-' + safeName
+
+    const { error: uploadError } = await supabase.storage
+      .from('checkin-photos')
+      .upload(filePath, file)
+
+    if (uploadError) {
+      console.error(uploadError)
+      alert('Photo upload failed.')
+      setReplacingPhoto(false)
+      return
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('checkin-photos')
+      .getPublicUrl(filePath)
+
+    const { error } = await supabase.rpc('replace_checkin_photo', {
+      p_participant_id: myParticipantId,
+      p_photo_url: urlData.publicUrl,
+    })
+
+    if (error) {
+      console.error(error)
+      alert('Something went wrong replacing your photo: ' + error.message)
+    } else {
+      loadParticipants()
+    }
+    setReplacingPhoto(false)
+  }
+
   function copyLink() {
     const url = window.location.origin + window.location.pathname + '?join=' + challenge.invite_code
     navigator.clipboard.writeText(url)
@@ -331,6 +428,7 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
       p_name: editName,
       p_rules: editRules || null,
       p_prize: editPrize || null,
+      p_end_date: editEndDate || null,
     })
 
     if (error) {
@@ -339,7 +437,7 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
       return
     }
 
-    setChallenge({ ...challenge, name: editName, rules: editRules, prize_pool: editPrize })
+    setChallenge({ ...challenge, name: editName, rules: editRules, prize_pool: editPrize, end_date: editEndDate })
     setEditing(false)
   }
 
@@ -396,6 +494,14 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
               onChange={(e) => setEditPrize(e.target.value)}
               placeholder="Prize pool"
             />
+            <label className="field-label">
+              End date (optional)
+              <input
+                type="date"
+                value={editEndDate}
+                onChange={(e) => setEditEndDate(e.target.value)}
+              />
+            </label>
             <div className="edit-actions">
               <button type="submit">Save</button>
               <button type="button" className="ghost-btn" onClick={() => setEditing(false)}>Cancel</button>
@@ -404,14 +510,19 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
         ) : (
           <>
             <h1>{challenge.name}</h1>
+            {challenge.closed && <p className="closed-line">This challenge is closed. No new check-ins.</p>}
             {challenge.rules && <p className="rules">{challenge.rules}</p>}
             {challenge.prize_pool && <p className="prize-line">Prize: {challenge.prize_pool}</p>}
+            {challenge.end_date && <p className="end-date-line">Ends: {challenge.end_date}</p>}
           </>
         )}
 
         {isCreator && !editing && (
           <div className="creator-actions">
             <button className="ghost-btn" onClick={() => setEditing(true)}>Edit challenge</button>
+            {!challenge.closed && (
+              <button className="ghost-btn" onClick={closeChallenge}>Close challenge</button>
+            )}
             <button className="danger-btn" onClick={deleteChallenge}>Delete challenge</button>
           </div>
         )}
@@ -421,24 +532,69 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
         </button>
 
         {!myParticipantId ? (
-          <form onSubmit={joinChallenge} className="join-form">
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <button type="submit">Join Challenge</button>
-          </form>
+          challenge.closed ? (
+            <p className="empty">This challenge is closed to new members.</p>
+          ) : (
+            <form onSubmit={joinChallenge} className="join-form">
+              <input
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <button type="submit">Join Challenge</button>
+            </form>
+          )
         ) : (
           <div className="checkin-box">
-            <p>
-              Logged in as <strong>{me ? me.name : ''}</strong> · streak: {me ? me.streak : 0} days
-              {me && me.missed && <span className="missed-badge">missed a day</span>}
-            </p>
+            {editingMyName ? (
+              <form onSubmit={saveMyName} className="join-form">
+                <input
+                  type="text"
+                  value={myNameInput}
+                  onChange={(e) => setMyNameInput(e.target.value)}
+                  placeholder="Your name"
+                />
+                <button type="submit">Save</button>
+                <button type="button" className="ghost-btn" onClick={() => setEditingMyName(false)}>Cancel</button>
+              </form>
+            ) : (
+              <p>
+                Logged in as <strong>{me ? me.name : ''}</strong>
+                {' '}
+                <button
+                  type="button"
+                  className="inline-link"
+                  onClick={() => {
+                    setMyNameInput(me ? me.name : '')
+                    setEditingMyName(true)
+                  }}
+                >
+                  change name
+                </button>
+                {' '}· streak: {me ? me.streak : 0} days
+                {me && me.missed && <span className="missed-badge">missed a day</span>}
+              </p>
+            )}
 
-            {me && me.checkedInToday ? (
-              <p className="already-logged">Already logged today. Nice work.</p>
+            {challenge.closed ? (
+              <p className="already-logged">This challenge is closed. No more check-ins.</p>
+            ) : me && me.checkedInToday ? (
+              <>
+                <p className="already-logged">Already logged today. Nice work.</p>
+                <label className="photo-input">
+                  {replacingPhoto ? 'Replacing...' : "Replace today's photo"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files[0]) replaceTodaysPhoto(e.target.files[0])
+                    }}
+                    hidden
+                    disabled={replacingPhoto}
+                  />
+                </label>
+              </>
             ) : (
               <>
                 <label className="photo-input">
@@ -473,7 +629,18 @@ function ChallengeDetail({ challenge: initialChallenge, onBack }) {
                   {p.name}
                   {p.missed && <span className="missed-dot" title="Missed a day">⚠</span>}
                 </span>
-                <span className="score">{p.streak}</span>
+                <span className="lb-right">
+                  <span className="score">{p.streak}</span>
+                  {isCreator && p.id !== myParticipantId && (
+                    <button
+                      type="button"
+                      className="remove-link"
+                      onClick={() => removeParticipant(p.id, p.name)}
+                    >
+                      remove
+                    </button>
+                  )}
+                </span>
               </li>
             ))}
           </ol>
