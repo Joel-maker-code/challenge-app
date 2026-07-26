@@ -89,7 +89,7 @@ function AuthOverlay({ view, setView }) {
               <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               <input type="password" placeholder="Password (min 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
               <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              <bton type="submit" disabled={loading}>{loading ? 'Signing up...' : 'Sign Up'}</button>
+              <tton type="submit" disabled={loading}>{loading ? 'Signing up...' : 'Sign Up'}</button>
             </form>
             {error && <p className="auth-error">{error}</p>}
             {message && <p className="auth-message">{message}</p>}
