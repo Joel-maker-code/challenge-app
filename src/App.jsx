@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from './useAuth'
 import AuthOverlay from './AuthOverlay'
+import AuthConfirmHandler from './AuthConfirmHandler'
 import './App.css'
 
 // STAGE 3 TEST HARNESS — temporary. Tests the full AuthOverlay
@@ -19,6 +20,21 @@ function App() {
       setAuthView((v) => (v === 'reset' ? v : null))
     }
   }, [lastAuthEvent])
+
+  // A password-reset link also redirects here now (so it can carry a pending
+  // invite code the same way a confirmation link does), but it needs the
+  // existing tested reset flow, not AuthConfirmHandler's signup-confirm UI.
+  const isRecoveryLink =
+    lastAuthEvent === 'PASSWORD_RECOVERY' ||
+    new URLSearchParams(window.location.hash.slice(1)).get('type') === 'recovery'
+
+  if (window.location.pathname === '/auth/confirm' && !isRecoveryLink) {
+    return (
+      <div style={{ padding: 40, fontFamily: 'monospace', color: '#eee', background: '#111', minHeight: '100vh' }}>
+        <AuthConfirmHandler session={session} authReady={authReady} />
+      </div>
+    )
+  }
 
   if (!authReady) {
     return (

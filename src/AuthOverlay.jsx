@@ -16,6 +16,16 @@ function AuthOverlay({ view, setView }) {
     setMessage('')
   }
 
+  // Carries a pending invite (?join=CODE, or one already stashed from an
+  // earlier visit) through the confirmation email so AuthConfirmHandler can
+  // pick it back up once the account is confirmed.
+  function buildConfirmRedirect() {
+    const url = new URL('/auth/confirm', window.location.origin)
+    const joinCode = new URLSearchParams(window.location.search).get('join') || localStorage.getItem('pendingInviteCode')
+    if (joinCode) url.searchParams.set('join', joinCode)
+    return url.toString()
+  }
+
   async function handleSignUp(e) {
     e.preventDefault()
     reset()
@@ -27,7 +37,7 @@ function AuthOverlay({ view, setView }) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: buildConfirmRedirect() },
     })
     setLoading(false)
     if (error) setError(error.message)
@@ -48,7 +58,7 @@ function AuthOverlay({ view, setView }) {
     reset()
     setLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin,
+      redirectTo: buildConfirmRedirect(),
     })
     setLoading(false)
     if (error) setError(error.message)
