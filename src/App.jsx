@@ -59,10 +59,10 @@ function App() {
           <button onClick={logout} style={{ padding: '10px 20px' }}>Log Out</button>
         </div>
       ) : (
-        <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
-          <button onClick={() => setAuthView('signup')} style={{ padding: '10px 20px' }}>Open Sign Up</button>
-          <button onClick={() => setAuthView('login')} style={{ padding: '10px 20px' }}>Open Log In</button>
-          <button onClick={() => setAuthView('forgot')} style={{ padding: '10px 20px' }}>Open Forgot Password</button>
+        <div className="auth-bar">
+          <button onClick={() => setAuthView('signup')}>Open Sign Up</button>
+          <button onClick={() => setAuthView('login')}>Open Log In</button>
+          <button onClick={() => setAuthView('forgot')}>Open Forgot Password</button>
         </div>
       )}
 
